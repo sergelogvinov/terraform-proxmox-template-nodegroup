@@ -56,16 +56,13 @@ resource "proxmox_virtual_environment_vm" "instances" {
     type     = "host"
     flags    = sort(flatten([var.cpu_flags, var.hugepages == "1024" ? ["+pdpe1gb"] : []]))
   }
-  dynamic "memory" {
-    for_each = var.hugepages != "" ? [1] : []
-    content {
-      dedicated = var.memory
-      floating  = 0
-      hugepages = var.hugepages
-      # Kernel may not allocate memory if hugepages are released, so we keep them allocated
-      # Better to allocate 1G hugepages on boot time, kernel cmdline: default_hugepagesz=1G hugepagesz=1G hugepages=xx
-      keep_hugepages = var.hugepages == "1024" ? true : false
-    }
+  memory {
+    dedicated = var.memory
+    floating  = 0
+    hugepages = var.hugepages == "" ? null : var.hugepages
+    # Kernel may not allocate memory if hugepages are released, so we keep them allocated
+    # Better to allocate 1G hugepages on boot time, kernel cmdline: default_hugepagesz=1G hugepagesz=1G hugepages=xx
+    keep_hugepages = var.hugepages == "1024" ? true : false
   }
 
   dynamic "numa" {
@@ -73,7 +70,7 @@ resource "proxmox_virtual_environment_vm" "instances" {
       device = "numa${index(keys(module.affinity[0].arch[each.value.inx].numa), idx)}"
       cpus   = "${index(keys(module.affinity[0].arch[each.value.inx].numa), idx) * (var.cpus / length(module.affinity[0].arch[each.value.inx].numa))}-${(index(keys(module.affinity[0].arch[each.value.inx].numa), idx) + 1) * (var.cpus / length(module.affinity[0].arch[each.value.inx].numa)) - 1}"
       mem    = var.memory / length(module.affinity[0].arch[each.value.inx].numa)
-    } } : []
+    } } : {}
     content {
       device    = numa.value.device
       cpus      = numa.value.cpus
