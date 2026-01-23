@@ -144,17 +144,36 @@ variable "network_dns" {
   default = []
 }
 
-# variable "userdata_id" {
-#   description = "Userdata file ID for cloud-init image"
-#   type        = string
-#   default     = ""
-# }
+variable "cloudinit_userdata_id" {
+  description = "Userdata file ID for cloud-init image"
+  type        = string
+  default     = ""
+}
 
-# variable "userdata" {
-#   description = "Userdata for cloud-init image"
-#   type        = string
-#   default     = ""
-# }
+variable "cloudinit_userdata" {
+  description = "Userdata for cloud-init image"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "cloudinit_datastore" {
+  description = "Datastore for the userdata file"
+  type        = string
+  default     = "local"
+}
+
+variable "cloudinit_zone" {
+  description = "Zone for the metadata file"
+  type        = string
+  default     = ""
+}
+
+variable "cloudinit_region" {
+  description = "Region for the metadata file"
+  type        = string
+  default     = ""
+}
 
 variable "tags" {
   description = "Tags to be applied to the VM"

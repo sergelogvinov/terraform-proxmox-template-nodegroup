@@ -58,6 +58,8 @@ module "proxmox_nodegroup" {
 
 | Name | Type |
 |------|------|
+| [proxmox_virtual_environment_file.metadata](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_file) | resource |
+| [proxmox_virtual_environment_file.userdata](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_file) | resource |
 | [proxmox_virtual_environment_firewall_options.instances](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_firewall_options) | resource |
 | [proxmox_virtual_environment_firewall_rules.instances](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_firewall_rules) | resource |
 | [proxmox_virtual_environment_vm.instances](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_vm) | resource |
@@ -69,6 +71,11 @@ module "proxmox_nodegroup" {
 | <a name="input_bios"></a> [bios](#input\_bios) | BIOS type for the VM | `string` | `"ovmf"` | no |
 | <a name="input_boot_datastore"></a> [boot\_datastore](#input\_boot\_datastore) | Datastore for the VM | `string` | `"local"` | no |
 | <a name="input_boot_size"></a> [boot\_size](#input\_boot\_size) | Size of the boot disk in GB | `number` | `32` | no |
+| <a name="input_cloudinit_datastore"></a> [cloudinit\_datastore](#input\_cloudinit\_datastore) | Datastore for the userdata file | `string` | `"local"` | no |
+| <a name="input_cloudinit_region"></a> [cloudinit\_region](#input\_cloudinit\_region) | Region for the metadata file | `string` | `""` | no |
+| <a name="input_cloudinit_userdata"></a> [cloudinit\_userdata](#input\_cloudinit\_userdata) | Userdata for cloud-init image | `string` | `""` | no |
+| <a name="input_cloudinit_userdata_id"></a> [cloudinit\_userdata\_id](#input\_cloudinit\_userdata\_id) | Userdata file ID for cloud-init image | `string` | `""` | no |
+| <a name="input_cloudinit_zone"></a> [cloudinit\_zone](#input\_cloudinit\_zone) | Zone for the metadata file | `string` | `""` | no |
 | <a name="input_cpu_flags"></a> [cpu\_flags](#input\_cpu\_flags) | CPU flags for the VM | `list(string)` | `[]` | no |
 | <a name="input_cpus"></a> [cpus](#input\_cpus) | CPUs for the VM | `number` | `2` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description | `string` | `""` | no |

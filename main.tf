@@ -136,9 +136,9 @@ resource "proxmox_virtual_environment_vm" "instances" {
       }
     }
 
-    datastore_id = var.boot_datastore
-    # meta_data_file_id = var.metadata_id
-    # user_data_file_id = var.userdata_id
+    datastore_id      = var.boot_datastore
+    meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
+    user_data_file_id = var.cloudinit_userdata != "" ? proxmox_virtual_environment_file.userdata[0].id : var.cloudinit_userdata_id
   }
 
   operating_system {
@@ -166,4 +166,37 @@ resource "proxmox_virtual_environment_vm" "instances" {
   }
 
   tags = var.tags
+}
+
+resource "proxmox_virtual_environment_file" "metadata" {
+  for_each = local.instances
+
+  node_name    = var.node
+  content_type = "snippets"
+  datastore_id = var.cloudinit_datastore
+
+  source_raw {
+    data = templatefile("${path.module}/templates/metadata.yaml", {
+      hostname : each.value.name,
+      id : each.value.id,
+      providerID : "proxmox://${var.cloudinit_region}/${each.value.id}",
+      type : "${var.cpus}VCPU-${floor(var.memory / 1024)}GB",
+      zone : var.cloudinit_zone == "" ? var.node : var.cloudinit_zone,
+      region : var.cloudinit_region,
+    })
+    file_name = "${each.value.name}.metadata.yaml"
+  }
+}
+
+resource "proxmox_virtual_environment_file" "userdata" {
+  count = var.cloudinit_userdata != "" ? 1 : 0
+
+  node_name    = var.node
+  content_type = "snippets"
+  datastore_id = var.cloudinit_datastore
+
+  source_raw {
+    data      = var.cloudinit_userdata
+    file_name = "${var.name}.userdata.yaml"
+  }
 }
