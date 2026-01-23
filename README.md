@@ -27,6 +27,8 @@ module "proxmox_nodegroup" {
     "vmbr0" = {
       firewall        = true
       firewall_groups = "kubernetes"
+      ip6             = "auto"
+      ip4             = "dhcp"
     }
   }
 }
@@ -48,7 +50,9 @@ module "proxmox_nodegroup" {
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_affinity"></a> [affinity](#module\_affinity) | github.com/sergelogvinov/terraform-proxmox-cpuaffinity | n/a |
 
 ## Resources
 
@@ -75,6 +79,8 @@ No modules.
 | <a name="input_network"></a> [network](#input\_network) | n/a | `map(any)` | `{}` | no |
 | <a name="input_network_dns"></a> [network\_dns](#input\_network\_dns) | n/a | `list(string)` | `[]` | no |
 | <a name="input_node"></a> [node](#input\_node) | Proxmox node name where VM template will be created | `string` | `"node-name"` | no |
+| <a name="input_node_numa_architecture"></a> [node\_numa\_architecture](#input\_node\_numa\_architecture) | Proxmox node CPU architecture of the hypervisor node | `list(string)` | `[]` | no |
+| <a name="input_node_numa_shuft"></a> [node\_numa\_shuft](#input\_node\_numa\_shuft) | Proxmox node numa shuft mapping of the hypervisor node | `number` | `0` | no |
 | <a name="input_pool"></a> [pool](#input\_pool) | Name of the VM pool | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to be applied to the VM | `list(string)` | `[]` | no |
 | <a name="input_template_id"></a> [template\_id](#input\_template\_id) | ID of the template VM | `number` | `1` | no |

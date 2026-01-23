@@ -118,10 +118,16 @@ variable "network" {
     #   firewall        = true
     #   firewall_groups = "kubernetes"
     #   mtu             = 1500
-    #   ip6             = "auto"
+    #   ip6             = ""
     #   gw6             = "fe80::1"
-    #   ip4             = "dhcp"
+    #   ip6subnet       = "fe80::1/64"
+    #   ip6mask         = 64
+    #   ip6index        = 100
+    #   ip4             = ""
     #   gw4             = "192.168.1.1"
+    #   ip4subnet       = "192.168.1.0/24"
+    #   ip4mask         = 24
+    #   ip4index        = 32
     # }
     # "vmbr1" = {
     #   mtu = 1500

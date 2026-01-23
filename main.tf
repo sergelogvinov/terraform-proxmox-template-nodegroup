@@ -122,14 +122,14 @@ resource "proxmox_virtual_environment_vm" "instances" {
         dynamic "ipv4" {
           for_each = contains(keys(ip_config.value), "ip4") ? [1] : []
           content {
-            address = lookup(ip_config.value, "ip4")
+            address = lookup(ip_config.value, "ip4") == "" ? "${cidrhost(ip_config.value.ip4subnet, ip_config.value.ip4index + each.value.inx)}/${ip_config.value.ip4mask}" : ip_config.value.ip4
             gateway = lookup(ip_config.value, "gw4", null)
           }
         }
         dynamic "ipv6" {
           for_each = contains(keys(ip_config.value), "ip6") ? [1] : []
           content {
-            address = lookup(ip_config.value, "ip6")
+            address = lookup(ip_config.value, "ip6") == "" ? "${cidrhost(ip_config.value.ip6subnet, ip_config.value.ip6index + each.value.inx)}/${ip_config.value.ip6mask}" : ip_config.value.ip6
             gateway = lookup(ip_config.value, "gw6", null)
           }
         }
