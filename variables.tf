@@ -5,6 +5,18 @@ variable "node" {
   default     = "node-name"
 }
 
+variable "node_numa_architecture" {
+  description = "Proxmox node CPU architecture of the hypervisor node"
+  type        = list(string)
+  default     = [] # ["0-3,16-19", "4-7,20-23", "8-11,24-27", "12-15,28-31"]
+}
+
+variable "node_numa_shuft" {
+  description = "Proxmox node numa shuft mapping of the hypervisor node"
+  type        = number
+  default     = 0
+}
+
 variable "template_id" {
   description = "ID of the template VM"
   type        = number
@@ -126,14 +138,14 @@ variable "network_dns" {
   default = []
 }
 
-# variable "userdata" {
-#   description = "Userdata for cloud-init image"
+# variable "userdata_id" {
+#   description = "Userdata file ID for cloud-init image"
 #   type        = string
 #   default     = ""
 # }
 
-# variable "metadata" {
-#   description = "Metadata for cloud-init image"
+# variable "userdata" {
+#   description = "Userdata for cloud-init image"
 #   type        = string
 #   default     = ""
 # }

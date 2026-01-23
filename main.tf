@@ -11,6 +11,17 @@ locals {
     }
     ]
   ) : i.name => i }
+
+  affinity = length(var.node_numa_architecture) > 0
+}
+
+module "affinity" {
+  count  = local.affinity ? 1 : 0
+  source = "github.com/sergelogvinov/terraform-proxmox-cpuaffinity"
+
+  cpu_affinity = var.node_numa_architecture
+  vms          = var.vms
+  cpus         = var.cpus
 }
 
 resource "proxmox_virtual_environment_vm" "instances" {
@@ -38,11 +49,12 @@ resource "proxmox_virtual_environment_vm" "instances" {
   }
 
   cpu {
-    cores   = var.cpus
-    sockets = 1
-    numa    = true
-    type    = "host"
-    flags   = sort(flatten([var.cpu_flags, var.hugepages == "1024" ? ["+pdpe1gb"] : []]))
+    cores    = var.cpus
+    affinity = local.affinity ? join(",", module.affinity[0].arch[each.value.inx].cpus) : null
+    sockets  = 1
+    numa     = true
+    type     = "host"
+    flags    = sort(flatten([var.cpu_flags, var.hugepages == "1024" ? ["+pdpe1gb"] : []]))
   }
   dynamic "memory" {
     for_each = var.hugepages != "" ? [1] : []
@@ -56,20 +68,20 @@ resource "proxmox_virtual_environment_vm" "instances" {
     }
   }
 
-  # dynamic "numa" {
-  #   for_each = { for idx, numa in module.worker_affinity[each.value.zone].arch[each.value.inx].numa : idx => {
-  #     device = "numa${index(keys(module.worker_affinity[each.value.zone].arch[each.value.inx].numa), idx)}"
-  #     cpus   = "${index(keys(module.worker_affinity[each.value.zone].arch[each.value.inx].numa), idx) * (each.value.cpu / length(module.worker_affinity[each.value.zone].arch[each.value.inx].numa))}-${(index(keys(module.worker_affinity[each.value.zone].arch[each.value.inx].numa), idx) + 1) * (each.value.cpu / length(module.worker_affinity[each.value.zone].arch[each.value.inx].numa)) - 1}"
-  #     mem    = each.value.mem / length(module.worker_affinity[each.value.zone].arch[each.value.inx].numa)
-  #   } }
-  #   content {
-  #     device    = numa.value.device
-  #     cpus      = numa.value.cpus
-  #     hostnodes = numa.key
-  #     memory    = numa.value.mem
-  #     policy    = "bind"
-  #   }
-  # }
+  dynamic "numa" {
+    for_each = local.affinity ? { for idx, numa in module.affinity[0].arch[each.value.inx].numa : idx => {
+      device = "numa${index(keys(module.affinity[0].arch[each.value.inx].numa), idx)}"
+      cpus   = "${index(keys(module.affinity[0].arch[each.value.inx].numa), idx) * (var.cpus / length(module.affinity[0].arch[each.value.inx].numa))}-${(index(keys(module.affinity[0].arch[each.value.inx].numa), idx) + 1) * (var.cpus / length(module.affinity[0].arch[each.value.inx].numa)) - 1}"
+      mem    = var.memory / length(module.affinity[0].arch[each.value.inx].numa)
+    } } : []
+    content {
+      device    = numa.value.device
+      cpus      = numa.value.cpus
+      hostnodes = numa.key
+      memory    = numa.value.mem
+      policy    = "bind"
+    }
+  }
 
   scsi_hardware = "virtio-scsi-single"
   disk {
@@ -125,8 +137,8 @@ resource "proxmox_virtual_environment_vm" "instances" {
     }
 
     datastore_id = var.boot_datastore
-    #   meta_data_file_id = proxmox_virtual_environment_file.worker_metadata[each.key].id
-    #   user_data_file_id = proxmox_virtual_environment_file.worker_machineconfig[each.key].id
+    # meta_data_file_id = var.metadata_id
+    # user_data_file_id = var.userdata_id
   }
 
   operating_system {
