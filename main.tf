@@ -22,6 +22,7 @@ module "affinity" {
   cpu_affinity = var.node_numa_architecture
   vms          = var.vms
   cpus         = var.cpus
+  shift        = var.node_numa_shift
 }
 
 resource "proxmox_virtual_environment_vm" "instances" {

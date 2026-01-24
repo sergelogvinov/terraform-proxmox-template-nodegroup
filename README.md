@@ -186,7 +186,7 @@ How the module optimizes VMs you can read on articles:
 | <a name="input_network_dns"></a> [network\_dns](#input\_network\_dns) | n/a | `list(string)` | `[]` | no |
 | <a name="input_node"></a> [node](#input\_node) | Proxmox node name where VM template will be created | `string` | `"node-name"` | no |
 | <a name="input_node_numa_architecture"></a> [node\_numa\_architecture](#input\_node\_numa\_architecture) | Proxmox node CPU architecture of the hypervisor node | `list(string)` | `[]` | no |
-| <a name="input_node_numa_shuft"></a> [node\_numa\_shuft](#input\_node\_numa\_shuft) | Proxmox node numa shuft mapping of the hypervisor node | `number` | `0` | no |
+| <a name="input_node_numa_shift"></a> [node\_numa\_shift](#input\_node\_numa\_shift) | Proxmox node numa shift mapping of the hypervisor node | `number` | `0` | no |
 | <a name="input_pool"></a> [pool](#input\_pool) | Name of the VM pool | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to be applied to the VM | `list(string)` | `[]` | no |
 | <a name="input_template_id"></a> [template\_id](#input\_template\_id) | ID of the template VM | `number` | `1` | no |
