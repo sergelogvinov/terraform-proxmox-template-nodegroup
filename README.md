@@ -178,6 +178,7 @@ How the module optimizes VMs you can read on articles:
 | <a name="input_cpu_flags"></a> [cpu\_flags](#input\_cpu\_flags) | CPU flags for the VM | `list(string)` | `[]` | no |
 | <a name="input_cpus"></a> [cpus](#input\_cpus) | CPUs for the VM | `number` | `2` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description | `string` | `""` | no |
+| <a name="input_hostpci"></a> [hostpci](#input\_hostpci) | n/a | `list(any)` | `[]` | no |
 | <a name="input_hugepages"></a> [hugepages](#input\_hugepages) | Whether to enable hugepages for the VM | `string` | `""` | no |
 | <a name="input_id"></a> [id](#input\_id) | Start number of ID for the VM | `number` | `1000` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory size in MB | `number` | `2048` | no |

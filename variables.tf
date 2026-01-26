@@ -53,6 +53,17 @@ variable "pool" {
   default     = ""
 }
 
+variable "machine" {
+  description = "Machine type for the VM"
+  type        = string
+  default     = "q35"
+
+  validation {
+    condition     = contains(["q35", "pc"], var.machine)
+    error_message = "The machine must be one of 'q35' or 'pc'."
+  }
+}
+
 variable "bios" {
   description = "BIOS type for the VM"
   type        = string
@@ -142,6 +153,15 @@ variable "network" {
 variable "network_dns" {
   type    = list(string)
   default = []
+}
+
+variable "hostpci" {
+  type = list(any)
+  default = [
+    # {
+    #   mapping = "network"
+    # }
+  ]
 }
 
 variable "cloudinit_userdata_id" {

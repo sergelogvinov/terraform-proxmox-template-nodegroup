@@ -35,7 +35,10 @@ resource "proxmox_virtual_environment_vm" "instances" {
   pool_id             = var.pool
   reboot              = false
   reboot_after_update = false
+  stop_on_destroy     = true
   description         = var.description
+
+  machine = length(var.hostpci) > 0 && var.machine == "q35" ? "q35,viommu=virtio" : var.machine
 
   bios = var.bios
   dynamic "efi_disk" {
@@ -103,6 +106,15 @@ resource "proxmox_virtual_environment_vm" "instances" {
       firewall = lookup(network_device.value, "firewall", false)
       mtu      = lookup(network_device.value, "mtu", null)
       queues   = var.cpus
+    }
+  }
+
+  dynamic "hostpci" {
+    for_each = var.hostpci
+    content {
+      device  = "hostpci${hostpci.key}"
+      mapping = hostpci.value.mapping
+      pcie    = var.machine == "q35" ? true : false
     }
   }
 
