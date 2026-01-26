@@ -156,6 +156,8 @@ resource "proxmox_virtual_environment_vm" "instances" {
       ipv6_addresses,
       network_interface_names,
       initialization,
+      bios,
+      efi_disk,
       disk,
       cpu,
       memory,
