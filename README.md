@@ -158,6 +158,7 @@ How the module optimizes VMs you can read on articles:
 | Name | Type |
 |------|------|
 | [proxmox_virtual_environment_file.metadata](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_file) | resource |
+| [proxmox_virtual_environment_file.networkdata](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_file) | resource |
 | [proxmox_virtual_environment_file.userdata](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_file) | resource |
 | [proxmox_virtual_environment_firewall_options.instances](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_firewall_options) | resource |
 | [proxmox_virtual_environment_firewall_rules.instances](https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_firewall_rules) | resource |
@@ -167,6 +168,7 @@ How the module optimizes VMs you can read on articles:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_amdsev"></a> [amdsev](#input\_amdsev) | Whether to enable AMD SEV for the VM | `string` | `""` | no |
 | <a name="input_bios"></a> [bios](#input\_bios) | BIOS type for the VM | `string` | `"ovmf"` | no |
 | <a name="input_boot_datastore"></a> [boot\_datastore](#input\_boot\_datastore) | Datastore for the VM | `string` | `"local"` | no |
 | <a name="input_boot_size"></a> [boot\_size](#input\_boot\_size) | Size of the boot disk in GB | `number` | `32` | no |
@@ -181,6 +183,7 @@ How the module optimizes VMs you can read on articles:
 | <a name="input_hostpci"></a> [hostpci](#input\_hostpci) | n/a | `list(any)` | `[]` | no |
 | <a name="input_hugepages"></a> [hugepages](#input\_hugepages) | Whether to enable hugepages for the VM | `string` | `""` | no |
 | <a name="input_id"></a> [id](#input\_id) | Start number of ID for the VM | `number` | `1000` | no |
+| <a name="input_machine"></a> [machine](#input\_machine) | Machine type for the VM | `string` | `"q35"` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory size in MB | `number` | `2048` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the VM | `string` | `"group-1"` | no |
 | <a name="input_network"></a> [network](#input\_network) | n/a | `map(any)` | `{}` | no |

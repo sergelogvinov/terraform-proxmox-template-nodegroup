@@ -81,6 +81,17 @@ variable "tpm" {
   default     = false
 }
 
+variable "amdsev" {
+  description = "Whether to enable AMD SEV for the VM"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = contains(["", "std", "snp"], var.amdsev)
+    error_message = "The AMD SEV type must be one of 'std' or 'snp'."
+  }
+}
+
 variable "cpus" {
   description = "CPUs for the VM"
   type        = number
@@ -146,6 +157,16 @@ variable "network" {
     #   gw6 = "fe80::1"
     #   ip4 = "dhcp"
     #   gw4 = "192.168.1.1"
+    # }
+    # "hostpci0" = {
+    #   mtu       = 9000
+    #   ip6       = "auto"
+    #   gw6       = "fe80::1"
+    #   gw4       = "192.168.1.1"
+    #   ip4       = ""
+    #   ip4subnet = "192.168.1.0/24"
+    #   ip4mask   = 24
+    #   ip4index  = 32
     # }
   }
 }

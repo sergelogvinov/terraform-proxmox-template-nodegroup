@@ -1,0 +1,40 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+%{ for k, v in network ~}
+    ${v.name}:
+%{ if v.mac != "" || v.driver != "" ~}
+      match:
+%{ if v.driver != "" ~}
+        driver: ${v.driver}
+%{ else ~}
+        macaddress: ${v.mac}
+%{ endif ~}
+%{ endif ~}
+%{ if v.mtu > 0 ~}
+      mtu: ${v.mtu}
+%{ endif ~}
+%{ if v.ip4 != "dhcp" ~}
+      dhcp4: false
+%{ endif ~}
+%{ if v.ip6 != "dhcp" ~}
+      dhcp6: false
+%{ endif ~}
+      addresses:
+%{ if v.ip4 != "" ~}
+        - ${v.ip4}
+%{ endif ~}
+%{ if v.ip6 != "" ~}
+        - ${v.ip6}
+%{ endif ~}
+      routes:
+%{ if v.gw4 != "" ~}
+        - to: "0.0.0.0/0"
+          via: ${v.gw4}
+%{ endif ~}
+%{ if v.gw6 != "" ~}
+        - to: "::/0"
+          via: ${v.gw6}
+%{ endif ~}
+%{ endfor ~}

@@ -5,8 +5,26 @@ locals {
       inx : inx
       id : var.id + inx
       name : "${var.name}${format("%x", 10 + inx)}"
+
       firewall : {
         for k, v in var.network : k => lookup(v, "firewall_groups", "") if lookup(v, "firewall", false)
+      }
+
+      network : {
+        for n, v in var.network : n => {
+          name     = lookup(v, "name", "") != "" ? lookup(v, "name", "") : "eth${index(keys(var.network), n)}"
+          driver   = startswith(n, "hostpci") ? lookup(v, "driver", "") : ""
+          bridge   = startswith(n, "hostpci") ? "" : lookup(v, "bridge", n)
+          firewall = lookup(v, "firewall", false)
+          vlan     = lookup(v, "vlan", 0)
+
+          ip4 = lookup(v, "ip4subnet", "") != "" ? "${cidrhost(v.ip4subnet, v.ip4index + inx)}/${v.ip4mask}" : lookup(v, "ip4", "")
+          gw4 = lookup(v, "gw4", "")
+          ip6 = lookup(v, "ip6subnet", "") != "" ? "${cidrhost(v.ip6subnet, v.ip6index + inx)}/${v.ip6mask}" : lookup(v, "ip6", "")
+          gw6 = lookup(v, "gw6", "")
+          mtu = lookup(v, "mtu", 0)
+          mac = startswith(n, "hostpci") ? "" : lookup(v, "ip4subnet", "") != "" ? "BC:24:${join(":", formatlist("%02X", split(".", cidrhost(v.ip4subnet, v.ip4index + inx))))}" : lookup(v, "ip6subnet", "") != "" ? "BC:24:${upper(join(":", regexall("[0-9a-z]{2,2}", substr(replace(cidrhost(v.ip6subnet, v.ip6index + inx), ":", ""), -8, -1))))}" : ""
+        }
       }
     }
     ]
@@ -50,6 +68,27 @@ resource "proxmox_virtual_environment_vm" "instances" {
   }
   smbios {
     serial = "h=${each.value.name};i=${each.value.id}"
+  }
+
+  dynamic "amd_sev" {
+    for_each = var.amdsev != "" ? [1] : []
+    content {
+      type          = var.amdsev
+      kernel_hashes = true
+      no_debug      = true
+    }
+  }
+
+  dynamic "tpm_state" {
+    for_each = var.tpm ? [1] : []
+    content {
+      datastore_id = var.boot_datastore
+      version      = "v2.0"
+    }
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   cpu {
@@ -100,12 +139,14 @@ resource "proxmox_virtual_environment_vm" "instances" {
   }
 
   dynamic "network_device" {
-    for_each = var.network
+    for_each = { for k, v in each.value.network : k => v if !startswith(k, "hostpci") }
     content {
-      bridge   = network_device.key
-      firewall = lookup(network_device.value, "firewall", false)
-      mtu      = lookup(network_device.value, "mtu", null)
-      queues   = var.cpus
+      bridge      = network_device.key
+      firewall    = lookup(network_device.value, "firewall", false)
+      mtu         = lookup(network_device.value, "mtu", null)
+      mac_address = lookup(network_device.value, "mac", null)
+      vlan_id     = lookup(network_device.value, "vlan", null)
+      queues      = var.cpus
     }
   }
 
@@ -127,32 +168,29 @@ resource "proxmox_virtual_environment_vm" "instances" {
     }
 
     dynamic "ip_config" {
-      for_each = var.network
+      for_each = { for k, v in each.value.network : k => v if !startswith(k, "hostpci") }
       content {
         dynamic "ipv4" {
-          for_each = contains(keys(ip_config.value), "ip4") ? [1] : []
+          for_each = lookup(ip_config.value, "ip4", "") != "" ? [1] : []
           content {
-            address = lookup(ip_config.value, "ip4") == "" ? "${cidrhost(ip_config.value.ip4subnet, ip_config.value.ip4index + each.value.inx)}/${ip_config.value.ip4mask}" : ip_config.value.ip4
+            address = lookup(ip_config.value, "ip4")
             gateway = lookup(ip_config.value, "gw4", null)
           }
         }
         dynamic "ipv6" {
-          for_each = contains(keys(ip_config.value), "ip6") ? [1] : []
+          for_each = lookup(ip_config.value, "ip6", "") != "" ? [1] : []
           content {
-            address = lookup(ip_config.value, "ip6") == "" ? "${cidrhost(ip_config.value.ip6subnet, ip_config.value.ip6index + each.value.inx)}/${ip_config.value.ip6mask}" : ip_config.value.ip6
+            address = lookup(ip_config.value, "ip6")
             gateway = lookup(ip_config.value, "gw6", null)
           }
         }
       }
     }
 
-    datastore_id      = var.boot_datastore
-    meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
-    user_data_file_id = var.cloudinit_userdata != "" ? proxmox_virtual_environment_file.userdata[0].id : var.cloudinit_userdata_id
-  }
-
-  operating_system {
-    type = "l26"
+    datastore_id         = var.boot_datastore
+    meta_data_file_id    = proxmox_virtual_environment_file.metadata[each.key].id
+    user_data_file_id    = var.cloudinit_userdata != "" ? proxmox_virtual_environment_file.userdata[0].id : var.cloudinit_userdata_id
+    network_data_file_id = length([for k, v in each.value.network : k if startswith(k, "hostpci")]) > 0 ? proxmox_virtual_environment_file.networkdata[each.key].id : null
   }
 
   serial_device {}
@@ -168,8 +206,10 @@ resource "proxmox_virtual_environment_vm" "instances" {
       ipv6_addresses,
       network_interface_names,
       initialization,
-      bios,
       efi_disk,
+      amd_sev,
+      tpm_state,
+      bios,
       disk,
       cpu,
       memory,
@@ -210,5 +250,18 @@ resource "proxmox_virtual_environment_file" "userdata" {
   source_raw {
     data      = var.cloudinit_userdata
     file_name = "${var.name}.userdata.yaml"
+  }
+}
+
+resource "proxmox_virtual_environment_file" "networkdata" {
+  for_each = { for k, v in local.instances : k => v if strcontains(join(",", keys(v.network)), "hostpci") }
+
+  node_name    = var.node
+  content_type = "snippets"
+  datastore_id = var.cloudinit_datastore
+
+  source_raw {
+    data      = templatefile("${path.module}/templates/networkdata.yaml", each.value)
+    file_name = "${each.value.name}.networkdata.yaml"
   }
 }
