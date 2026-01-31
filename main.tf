@@ -31,6 +31,7 @@ locals {
   ) : i.name => i }
 
   affinity = length(var.node_numa_architecture) > 0
+  args     = local.affinity && var.cpus % 2 == 0 ? "-cpu 'host,topoext=on,host-cache-info=on' -smp '${var.cpus},sockets=1,cores=${var.cpus / 2},threads=2,maxcpus=${var.cpus}'" : ""
 }
 
 module "affinity" {
@@ -86,6 +87,8 @@ resource "proxmox_virtual_environment_vm" "instances" {
       version      = "v2.0"
     }
   }
+
+  kvm_arguments = var.args == "" ? local.args : trimspace(var.args)
 
   operating_system {
     type = "l26"
@@ -206,6 +209,7 @@ resource "proxmox_virtual_environment_vm" "instances" {
       ipv6_addresses,
       network_interface_names,
       initialization,
+      kvm_arguments,
       efi_disk,
       amd_sev,
       tpm_state,

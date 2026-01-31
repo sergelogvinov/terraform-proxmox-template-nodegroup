@@ -64,6 +64,12 @@ variable "machine" {
   }
 }
 
+variable "args" {
+  description = "KVM arguments for the VM"
+  type        = string
+  default     = ""
+}
+
 variable "bios" {
   description = "BIOS type for the VM"
   type        = string
