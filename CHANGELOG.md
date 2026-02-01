@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/compare/v0.1.0...v0.2.0) (2026-02-01)
+
+
+### Features
+
+* add cpu threads information ([7d8d7af](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/7d8d7afca47241e52d7368d9ba450e3574988560))
+* add hostpci ([699a15e](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/699a15e95f9fee89c473d6028a74c350ecba20dc))
+* network ipconfig for hostpci ([eaf66f1](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/eaf66f1b736da21bca1324ded1667a4070b500c0))
+
+
+### Bug Fixes
+
+* ignore changes ([4c3b527](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/4c3b5278f3cc0542ab35903799fbca6768c2e438))
+
 ## [0.1.0](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/compare/v0.0.1...v0.1.0) (2026-01-24)
 
 
