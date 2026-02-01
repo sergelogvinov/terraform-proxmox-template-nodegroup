@@ -169,6 +169,7 @@ How the module optimizes VMs you can read on articles:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_amdsev"></a> [amdsev](#input\_amdsev) | Whether to enable AMD SEV for the VM | `string` | `""` | no |
+| <a name="input_args"></a> [args](#input\_args) | KVM arguments for the VM | `string` | `""` | no |
 | <a name="input_bios"></a> [bios](#input\_bios) | BIOS type for the VM | `string` | `"ovmf"` | no |
 | <a name="input_boot_datastore"></a> [boot\_datastore](#input\_boot\_datastore) | Datastore for the VM | `string` | `"local"` | no |
 | <a name="input_boot_size"></a> [boot\_size](#input\_boot\_size) | Size of the boot disk in GB | `number` | `32` | no |
