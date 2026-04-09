@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/compare/v0.2.0...v0.3.0) (2026-04-09)
+
+
+### Features
+
+* cloud-init file prefix ([e43fcc3](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/e43fcc3062102b9d187d9b4aecf45e32dc549c52))
+* cpu reverse index ([fd828da](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/commit/fd828daa8ebb017c9475b0a39e6dce6b16dd0eca))
+
 ## [0.2.0](https://github.com/sergelogvinov/terraform-proxmox-template-nodegroup/compare/v0.1.0...v0.2.0) (2026-02-01)
 
 
