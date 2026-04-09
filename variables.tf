@@ -11,6 +11,12 @@ variable "node_numa_architecture" {
   default     = [] # ["0-3,16-19", "4-7,20-23", "8-11,24-27", "12-15,28-31"]
 }
 
+variable "node_numa_reverse" {
+  description = "Proxmox node CPU index reverse"
+  type        = bool
+  default     = false
+}
+
 variable "node_numa_shift" {
   description = "Proxmox node numa shift mapping of the hypervisor node"
   type        = number

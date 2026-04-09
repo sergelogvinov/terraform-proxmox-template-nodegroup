@@ -42,6 +42,7 @@ module "affinity" {
   vms          = var.vms
   cpus         = var.cpus
   shift        = var.node_numa_shift
+  reverse      = var.node_numa_reverse
 }
 
 resource "proxmox_virtual_environment_vm" "instances" {
