@@ -191,6 +191,12 @@ variable "hostpci" {
   ]
 }
 
+variable "cloudinit_prefix" {
+  description = "Cloud-init prefix for the metadata and userdata files"
+  type        = string
+  default     = ""
+}
+
 variable "cloudinit_userdata_id" {
   description = "Userdata file ID for cloud-init image"
   type        = string

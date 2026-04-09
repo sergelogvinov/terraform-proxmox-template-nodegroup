@@ -240,7 +240,7 @@ resource "proxmox_virtual_environment_file" "metadata" {
       zone : var.cloudinit_zone == "" ? var.node : var.cloudinit_zone,
       region : var.cloudinit_region,
     })
-    file_name = "${each.value.name}.metadata.yaml"
+    file_name = "${var.cloudinit_prefix}${each.value.name}.metadata.yaml"
   }
 }
 
@@ -253,7 +253,7 @@ resource "proxmox_virtual_environment_file" "userdata" {
 
   source_raw {
     data      = var.cloudinit_userdata
-    file_name = "${var.name}.userdata.yaml"
+    file_name = "${var.cloudinit_prefix}${var.name}.userdata.yaml"
   }
 }
 
@@ -266,6 +266,6 @@ resource "proxmox_virtual_environment_file" "networkdata" {
 
   source_raw {
     data      = templatefile("${path.module}/templates/networkdata.yaml", each.value)
-    file_name = "${each.value.name}.networkdata.yaml"
+    file_name = "${var.cloudinit_prefix}${each.value.name}.networkdata.yaml"
   }
 }
