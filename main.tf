@@ -208,6 +208,7 @@ resource "proxmox_virtual_environment_vm" "instances" {
       clone,
       ipv4_addresses,
       ipv6_addresses,
+      network_device,
       network_interface_names,
       initialization,
       kvm_arguments,
@@ -255,6 +256,12 @@ resource "proxmox_virtual_environment_file" "userdata" {
   source_raw {
     data      = var.cloudinit_userdata
     file_name = "${var.cloudinit_prefix}${var.name}.userdata.yaml"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      source_raw,
+    ]
   }
 }
 
